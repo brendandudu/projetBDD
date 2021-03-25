@@ -172,7 +172,7 @@ BEGIN
 	DECLARE radius FLOAT;
 	SET radius = 30;
     
-    SELECT *,  calculDistance(lat, lng, search_lat, search_lgn) AS distance, count(*) as nbResultat, avg()
+    SELECT *,  calculDistance(lat, lng, search_lat, search_lgn) AS distance, count(*) as nbResultat
     FROM Lodging l
 	LEFT JOIN Booking b ON l.id = b.lodging_id
 	WHERE (
