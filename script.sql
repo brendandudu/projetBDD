@@ -84,6 +84,32 @@ FOREIGN KEY (user_id) REFERENCES user(id),
 FOREIGN KEY (lodging_id) REFERENCES lodging(id)
 );
 
+/*USERS & PRIVILEGES*/
+
+-- Gestion des annonces : --
+CREATE USER IF NOT EXISTS 'GA'@'localhost' IDENTIFIED BY 'Resa2021@';
+-- Gestion des utilisateurs : --
+CREATE USER IF NOT EXISTS 'GU'@'localhost' IDENTIFIED BY 'Resa2021@';
+-- Gestion des réservations:  --
+CREATE USER IF NOT EXISTS 'GR'@'localhost' IDENTIFIED BY 'Resa2021@';
+-- Gestion des commentaires + wishlist: -- 
+CREATE USER IF NOT EXISTS 'GCW'@'localhost' IDENTIFIED BY 'Resa2021@';
+
+GRANT SELECT ON projetBDD.* TO GA@localhost;
+GRANT ALL ON projetBDD.lodging TO GA@localhost;
+
+GRANT SELECT ON projetBDD.* TO GU@localhost;
+GRANT ALL ON projetBDD.user TO GU@localhost;
+
+GRANT SELECT ON projetBDD.* TO GR@localhost;
+GRANT ALL ON projetBDD.booking TO GR@localhost;
+
+GRANT SELECT ON projetBDD.* TO GCW@localhost;
+GRANT ALL ON projetBDD.comment TO GCW@localhost;
+GRANT ALL ON projetBDD.wishlist TO GCW@localhost;
+
+/*Fin users */
+
 ############################## Fin création des tables (partie commune) ##############################
 
 
@@ -328,6 +354,49 @@ BEGIN
     FROM lodging, lodging_type
     WHERE lodging.lodging_type_id = lodging_type.id
     AND lodging_type.type_name = typeName;
+
+END $$
+DELIMITER ;
+
+-- Insère un nouvel hébergement --
+DELIMITER $$
+CREATE PROCEDURE insertLodging(
+	id INT,
+	lodging_type_id INT, 
+	name VARCHAR(255) , 
+	capacity INT, 
+	space INT,
+	internet_available TINYINT(1), 
+	description LONGTEXT, 
+	night_price DOUBLE PRECISION,
+	updated_at DATETIME,
+	lat DECIMAL(10,8),
+	lng DECIMAL(10,8),
+	address VARCHAR(255),
+	city VARCHAR(255),
+	user_id INT, 
+	created_at DATETIME
+)
+BEGIN
+    
+    INSERT INTO lodging
+	VALUES (
+		id,
+		lodging_type_id, 
+		name, 
+		capacity, 
+		space,
+		internet_available, 
+		description, 
+		night_price,
+		updated_at,
+		lat,
+		lng,
+		address,
+		city,
+		user_id, 
+		created_at
+    );
 
 END $$
 DELIMITER ;
@@ -694,7 +763,7 @@ DELIMITER ;
 
 -- Selectionne le nombre d'hébergements dans wishlist --
 DELIMITER $$
-CREATE PROCEDURE selectAveragePriceFromWishlist(user_id INT)
+CREATE PROCEDURE selectLodgingCountFromWishlist(user_id INT)
 BEGIN
     
     SELECT count(*)
@@ -775,7 +844,7 @@ DELIMITER ;
 
 -- Selectionne le nombre de commentaire pour un hébergement --
 DELIMITER $$
-CREATE PROCEDURE updateComment(lodging_id INT)
+CREATE PROCEDURE selectCommentCountByLodging(lodging_id INT)
 BEGIN
     
     SELECT count(*)
